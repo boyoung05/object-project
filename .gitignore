@@ -1,0 +1,25 @@
+# === Gradle / Build ===
+.gradle/
+**/build/
+**/captures/
+**/.cxx/
+.externalNativeBuild/
+
+# === IDE ===
+.idea/
+*.iml
+
+# === Local config / Keys ===
+local.properties
+keystore.properties
+*.jks
+*.keystore
+
+# === Artifacts ===
+*.apk
+*.aab
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
