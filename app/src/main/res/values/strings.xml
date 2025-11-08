@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">object</string>
+    <string name="app_name">book</string>
+    <string name="google_maps_key">AIzaSyDupApbRjz5lycJJjDVeSp_QwAGwmqxu7Y</string>
 </resources>

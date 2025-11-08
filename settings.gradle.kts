@@ -16,9 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://maven.google.com")}
+        maven { url = uri("https://dl.google.com/dl/android/maven2/") }
     }
 }
 
-rootProject.name = "object"
+rootProject.name = "book"
 include(":app")
  
