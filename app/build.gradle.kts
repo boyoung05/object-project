@@ -70,6 +70,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation(platform("androidx.compose:compose-bom:2024.09.01"))
+    implementation("androidx.compose.material:material-icons-extended")
 
     // import the firebase BoM
     //implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
