@@ -77,10 +77,12 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     //implementation("com.google.firebase:firebase-analytics")
 
+    // firebase 의존성 추가
     implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.0")
 
     // 지도 의존성 추가
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.maps.android:maps-compose:6.1.1")
+
 }
