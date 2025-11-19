@@ -1,10 +1,9 @@
-package com.example.project.ui.screen.mypage
+package com.example.project.ui.screen.search
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun MyPageScreen() {
-    Text(text = "My Page Screen")
+fun SearchScreen() {
+    Text(text = "Search Screen")
 }
-
