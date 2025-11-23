@@ -8,32 +8,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.project.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeBookCarousel() {
-    // 페이지 수는 3개 예시
-    val pagerState = rememberPagerState(pageCount = { 3 })
+fun BookCarousel() {
+
+    val pageCount = 3
+    val pagerState = rememberPagerState(pageCount = { pageCount })
+    val scope = rememberCoroutineScope()
+
+    // 🔵 자동 슬라이드 기능
+    LaunchedEffect(pagerState.currentPage) {
+        delay(3000)   // 3초마다 자동 슬라이드
+        val nextPage = (pagerState.currentPage + 1) % pageCount
+        pagerState.animateScrollToPage(nextPage)
+    }
 
     HorizontalPager(
         state = pagerState,
         modifier = Modifier
             .fillMaxWidth()
             .height(320.dp)
-    ) { _ ->
+    ) { index ->
+
         Card(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .height(300.dp)
                 .fillMaxWidth()
         ) {
-            // 책 표지 이미지 (임시로 ic_launcher_foreground 사용)
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "책 이미지",
@@ -43,5 +54,3 @@ fun HomeBookCarousel() {
         }
     }
 }
-
-

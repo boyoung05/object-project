@@ -1,10 +1,6 @@
 package com.example.project.ui.screen.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -14,11 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.project.ui.screen.home.ActionButtons
+import com.example.project.ui.screen.home.KeywordItem
+import com.example.project.ui.screen.home.BottomNavBar
+import com.example.project.ui.screen.home.BookCarousel
 
 @Composable
-fun HomeScreen(
-    navController: NavHostController
-) {
+fun HomeScreen(navController: NavHostController) {
+
     Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController)
@@ -31,14 +30,14 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
 
-            // 상단 책 카루셀
-            HomeBookCarousel()
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 🔵 상단 큰 책 이미지 배너
+            BookCarousel()
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // 이번주 인기 키워드 제목
             Text(
                 text = "이번주 인기 키워드",
                 style = MaterialTheme.typography.titleLarge,
@@ -47,7 +46,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 인기 키워드 아이템들
             KeywordItem(
                 title = "토익",
                 tag = "토익 문제집",
@@ -62,12 +60,9 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 하단 버튼 2개
             ActionButtons()
 
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
-
-

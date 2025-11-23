@@ -1,34 +1,26 @@
 package com.example.project.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-
 import com.example.project.ui.screen.home.HomeScreen
 
-import com.example.project.ui.screen.chat.ChatScreen
-import com.example.project.ui.screen.search.SearchScreen
-import com.example.project.ui.screen.mypage.MyPageScreen
-
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Search : Screen("search")
-    object Chat : Screen("chat")
-    object MyPage : Screen("mypage")
-}
-
 @Composable
-fun AppNavGraph() {
-    val navController = rememberNavController()
+fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = "home"
     ) {
-        composable(Screen.Home.route) { HomeScreen(navController) }
-        composable(Screen.Search.route) { SearchScreen() }
-        composable(Screen.Chat.route) { ChatScreen() }
-        composable(Screen.MyPage.route) { MyPageScreen() }
+
+        // 홈 화면
+        composable("home") {
+            HomeScreen(navController = navController)
+        }
+
+        // 필요한 경우 추가될 화면들
+        // composable("search") { SearchScreen(navController) }
+        // composable("mypage") { MyPageScreen(navController) }
     }
 }
