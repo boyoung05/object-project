@@ -17,9 +17,10 @@ import com.example.book.Screens.exchange.components.BookCard
 import com.example.book.Screens.exchange.components.CategoryChip
 import com.example.book.Screens.exchange.components.TradeToggleItem
 import com.example.book.Screens.exchange.components.ProposalHistoryItem
+import androidx.navigation.NavController
 
 @Composable
-fun ExchangeProposalScreen() {
+fun ExchangeProposalScreen(navController: NavController) {
 
     Column(
         modifier = Modifier
