@@ -16,8 +16,9 @@ import com.example.book.navigation.HomeScreen
 import com.example.book.navigation.ChatScreen
 import com.example.book.navigation.MyPageScreen
 
-// ★ 반드시 추가해야 함
 import com.example.book.Screens.exchange.ExchangeProposalScreen
+import com.example.book.Screens.chat.ChatRoomScreen   // ⭐ 추가
+
 @Composable
 fun BottomNavHost(
     navController: NavHostController,
@@ -38,7 +39,7 @@ fun BottomNavHost(
         // 2. 검색 (navController 필요)
         composable("search") { SearchScreen(navController) }
 
-        // 3. 채팅
+        // 3. 채팅 목록
         composable("chat") { ChatScreen() }
 
         // 4. 마이페이지
@@ -48,6 +49,11 @@ fun BottomNavHost(
         composable("bookinfo") { BookInfoScreen(navController) }
 
         // 6. 교환 제안 화면
-        composable("exchange_proposal") { ExchangeProposalScreen() }
+        composable("exchange_proposal") { ExchangeProposalScreen(navController) }
+
+        //  7. 챗룸 화면 (여기에 추가)
+        composable("chat_room/{roomId}") { backStackEntry ->
+            ChatRoomScreen()
+        }
     }
 }
