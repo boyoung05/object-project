@@ -12,12 +12,11 @@ import androidx.navigation.compose.composable
 import com.example.book.Screens.BookInfo.BookInfoScreen
 import com.example.book.Screens.Search.SearchScreen
 
-import com.example.book.navigation.HomeScreen
-import com.example.book.navigation.ChatScreen
-import com.example.book.navigation.MyPageScreen
+import com.example.book.Screens.home.HomeScreen        // ⭐ 수정: HomeScreen은 book 패키지
 
-// ★ 반드시 추가해야 함
+
 import com.example.book.Screens.exchange.ExchangeProposalScreen
+
 @Composable
 fun BottomNavHost(
     navController: NavHostController,
@@ -32,22 +31,16 @@ fun BottomNavHost(
             .padding(paddingValues)
     ) {
 
-        // 1. 홈
-        composable("home") { HomeScreen() }
+        // 1. 홈 화면
+        composable("home") { HomeScreen(navController) }
 
-        // 2. 검색 (navController 필요)
+        // 2. 검색 화면
         composable("search") { SearchScreen(navController) }
-
-        // 3. 채팅
-        composable("chat") { ChatScreen() }
-
-        // 4. 마이페이지
-        composable("mypage") { MyPageScreen() }
-
-        // 5. 책 상세
+        // 5. 책 상세 화면
         composable("bookinfo") { BookInfoScreen(navController) }
 
         // 6. 교환 제안 화면
-        composable("exchange_proposal") { ExchangeProposalScreen() }
-    }
+        composable("exchange_proposal") { ExchangeProposalScreen(navController) }
+
+   }
 }
