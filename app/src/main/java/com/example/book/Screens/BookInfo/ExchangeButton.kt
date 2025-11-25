@@ -11,11 +11,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun ExchangeButton() {
+fun ExchangeButton(navController: NavController) {
     Button(
-        onClick = {/* 나중에 교환 제안 페이지로 넘어가게 */},
+        onClick = {
+            navController.navigate("exchange_proposal")
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),

@@ -23,5 +23,8 @@ fun AppNavHost() {
         composable("main") {
             MainScreen()
         }
+        composable("exchange_proposal") {
+        }
+
     }
 }

@@ -11,9 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun BookInfoScreen() {
+fun BookInfoScreen(navController: NavController) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -50,7 +51,6 @@ fun BookInfoScreen() {
         Spacer(modifier = Modifier.height(32.dp))
 
         // 5. 교환 제안하기 버튼
-        ExchangeButton()
-        Spacer(modifier = Modifier.height(16.dp))
+        ExchangeButton(navController = navController)
     }
 }
