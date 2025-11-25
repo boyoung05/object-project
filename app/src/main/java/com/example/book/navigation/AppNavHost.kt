@@ -1,20 +1,11 @@
 package com.example.book.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
 import com.example.book.ui.screens.splash.SplashScreen
 import com.example.book.ui.screens.main.MainScreen
-
-// ⬇ 추가해야 하는 import들
-import com.example.book.Screens.Search.SearchScreen
-import com.example.book.Screens.BookInfo.BookInfoScreen
-import com.example.book.navigation.HomeScreen
-import com.example.book.navigation.ChatScreen
-import com.example.book.navigation.MyPageScreen
 
 @Composable
 fun AppNavHost() {
@@ -24,16 +15,13 @@ fun AppNavHost() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("splash") { SplashScreen(navController) }
-        composable("main") { MainScreen(navController) }
+        composable("splash") {
+            SplashScreen(navController)
+        }
 
-        // BottomNav 화면들
-        composable("home") { HomeScreen() }
-        composable("search") { SearchScreen(navController) }
-        composable("chat") { ChatScreen() }
-        composable("mypage") { MyPageScreen() }
-
-        // 상세 페이지
-        composable("bookinfo") { BookInfoScreen() }
+        // 🔥 MainScreen은 navController를 받지 않음
+        composable("main") {
+            MainScreen()
+        }
     }
 }

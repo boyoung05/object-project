@@ -8,23 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.book.Screens.Search.SearchScreen
 import com.example.book.Screens.BookInfo.BookInfoScreen
+import com.example.book.Screens.Search.SearchScreen
 
-@Composable
-fun HomeScreen() { /* TODO: 홈 화면 UI */ }
-
-@Composable
-fun ChatScreen() { /* TODO: 채팅 목록 화면 */ }
-
-@Composable
-fun MyPageScreen() { /* TODO: 마이페이지 화면 */ }
+// 너의 화면들
+import com.example.book.navigation.HomeScreen
+import com.example.book.navigation.ChatScreen
+import com.example.book.navigation.MyPageScreen
 
 @Composable
 fun BottomNavHost(
     navController: NavHostController,
     paddingValues: PaddingValues
 ) {
+
     NavHost(
         navController = navController,
         startDestination = "home",
@@ -32,11 +29,20 @@ fun BottomNavHost(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+
+        // 홈 화면
         composable("home") { HomeScreen() }
+
+        // 검색 화면
         composable("search") { SearchScreen(navController) }
+
+        // 채팅 화면
         composable("chat") { ChatScreen() }
+
+        // 마이페이지 화면
         composable("mypage") { MyPageScreen() }
 
+        // 책 상세
         composable("bookinfo") { BookInfoScreen() }
     }
 }
