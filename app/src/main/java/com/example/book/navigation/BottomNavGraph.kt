@@ -1,39 +1,42 @@
 package com.example.book.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-
-import com.example.book.ui.screens.splash.SplashScreen
-import com.example.book.ui.screens.main.MainScreen
-
-// ⬇ 추가해야 하는 import들
 import com.example.book.Screens.Search.SearchScreen
 import com.example.book.Screens.BookInfo.BookInfoScreen
-import com.example.book.navigation.HomeScreen
-import com.example.book.navigation.ChatScreen
-import com.example.book.navigation.MyPageScreen
 
 @Composable
-fun AppNavHost() {
-    val navController = rememberNavController()
+fun HomeScreen() { /* TODO: 홈 화면 UI */ }
 
+@Composable
+fun ChatScreen() { /* TODO: 채팅 목록 화면 */ }
+
+@Composable
+fun MyPageScreen() { /* TODO: 마이페이지 화면 */ }
+
+@Composable
+fun BottomNavHost(
+    navController: NavHostController,
+    paddingValues: PaddingValues
+) {
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "home",
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
     ) {
-        composable("splash") { SplashScreen(navController) }
-        composable("main") { MainScreen(navController) }
-
-        // BottomNav 화면들
         composable("home") { HomeScreen() }
         composable("search") { SearchScreen(navController) }
         composable("chat") { ChatScreen() }
         composable("mypage") { MyPageScreen() }
 
-        // 상세 페이지
         composable("bookinfo") { BookInfoScreen() }
     }
 }
