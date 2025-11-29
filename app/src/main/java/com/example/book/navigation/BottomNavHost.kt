@@ -13,7 +13,7 @@ import com.example.book.Screens.BookInfo.BookInfoScreen
 import com.example.book.Screens.Search.SearchScreen
 
 import com.example.book.Screens.home.HomeScreen        // ⭐ 수정: HomeScreen은 book 패키지
-
+import com.example.book.Screens.mypage.MyPageScreen
 
 import com.example.book.Screens.exchange.ExchangeProposalScreen
 import com.example.book.Screens.chat.ChatRoomScreen   // ⭐ 추가
@@ -42,7 +42,7 @@ fun BottomNavHost(
         composable("chat") { ChatScreen() }
 
         // 4. 마이페이지
-        composable("mypage") { MyPageScreen() }
+        composable("mypage") { MyPageScreen((navController)) }
 
         // 5. 책 상세
         composable("bookinfo") { BookInfoScreen(navController) }
