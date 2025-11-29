@@ -19,6 +19,7 @@ import com.example.book.Screens.exchange.components.TradeToggleItem
 import com.example.book.Screens.exchange.components.ProposalHistoryItem
 import androidx.navigation.NavController
 
+
 @Composable
 fun ExchangeProposalScreen(navController: NavController) {
 
@@ -100,7 +101,7 @@ fun ExchangeProposalScreen(navController: NavController) {
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = {},
+            onClick = { navController.navigate("chat_room/999") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFB9D86B),
                 contentColor = Color.Black
