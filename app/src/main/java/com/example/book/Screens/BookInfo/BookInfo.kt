@@ -14,7 +14,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun BookInfoScreen(navController: NavController) {
+fun BookInfoScreen(
+    navController: NavController
+    ) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -24,6 +26,7 @@ fun BookInfoScreen(navController: NavController) {
             .verticalScroll(scrollState)
             .padding(30.dp)
     ) {
+
         // 상단 타이틀
         Text(
             text = "책 정보",
@@ -39,8 +42,8 @@ fun BookInfoScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // 2. 상태 표시 섹션
-        StatusSection()
-        Spacer(modifier = Modifier.height(24.dp))
+        //StatusSection()
+        //Spacer(modifier = Modifier.height(24.dp))
 
         // 3. 하이라이트 정보
         HighlightSection()
