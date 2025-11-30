@@ -5,11 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,34 +29,44 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.book.R
+import com.example.book.data.Book
 
 @Composable
 fun ResultCardsRow(
-    onCardClick: () -> Unit
+    books: List<Book>, // 필터링 된 책 리스트
+    onCardClick: (Book) -> Unit // 어떤 책을 클릭했는지 넘겨줌
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        val painter1 = painterResource(id = R.drawable.ic_launcher_foreground)
-        val painter2 = painterResource(id = R.drawable.ic_launcher_foreground)
-
-        ImageCard(
-            painter = painter1,
-            contentDescription = "예시 책 1",
-            title = "스토너\n상: 직거래 가능",
-            modifier = Modifier.weight(1f),
-            onClick = onCardClick
+    Column {
+        Text(
+            text = "검색 결과",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFFB5D350)
         )
+        Spacer(modifier = Modifier.height(12.dp))
 
-        ImageCard(
-            painter = painter2,
-            contentDescription = "예시 책 2",
-            title = "자료구조\n중: 택배 가능",
-            modifier = Modifier.weight(1f),
-            onClick = onCardClick
-        )
+        LazyRow (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+        ) {
+            items(books) { book ->
+                val painter = painterResource(id = book.thumbnailResId)
+
+                ImageCard(
+                    painter = painter,
+                    contentDescription = book.title,
+                    title = "${book.title}\n${book.condition}: ${book.method} 가능",
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(210.dp),
+                    onClick = { onCardClick(book) }
+                )
+
+            }
+
+        }
+
     }
 }
 
@@ -66,7 +80,6 @@ private fun ImageCard(
 ) {
     Card(
         modifier = modifier
-            .height(210.dp)
             .clickable {onClick()}, // 클릭 시 콜백 실행
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
