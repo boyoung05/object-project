@@ -76,8 +76,7 @@ fun SearchScreen(navController: NavController) {
             ResultCardsRow(
                 books = filteredBooks,
                 onCardClick = { book ->
-                    selectedBook = book // 어떤 책인지 기억
-                    showBookInfo = true // 상세 화면으로 전환
+                    navController.navigate("bookinfo/${book.id}") // 상세 화면 페이지(bookinfo)로 navigate
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
