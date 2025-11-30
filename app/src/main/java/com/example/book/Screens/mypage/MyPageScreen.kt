@@ -1,6 +1,7 @@
 package com.example.book.Screens.mypage
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,9 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// -------------------------------------------------------------
-//  🔥 마이페이지 메인 화면
-// -------------------------------------------------------------
+
 @Composable
 fun MyPageScreen(navController: NavController) {
 
@@ -42,7 +41,6 @@ fun MyPageScreen(navController: NavController) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
 
-                // 프로필 아이콘
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "profile",
@@ -66,10 +64,7 @@ fun MyPageScreen(navController: NavController) {
 
                     Box(
                         modifier = Modifier
-                            .background(
-                                Color(0xFFFFF3B8),
-                                RoundedCornerShape(12.dp)
-                            )
+                            .background(Color(0xFFFFF3B8), RoundedCornerShape(12.dp))
                             .padding(horizontal = 12.dp, vertical = 4.dp)
                     ) {
                         Text(
@@ -83,6 +78,7 @@ fun MyPageScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
 
         // --------------------------- 인증 ---------------------------
         Text(text = "인증", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -99,27 +95,53 @@ fun MyPageScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+
         // --------------------------- 내 책 관리 ---------------------------
         Text(text = "내 책 관리", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ManageItem("책 등록", Icons.Default.Book)
+        // 1) 책 등록
+        ManageItem(
+            label = "책 등록",
+            icon = Icons.Default.Book,
+            onClick = { navController.navigate("upload_book") }
+        )
+
         Spacer(modifier = Modifier.height(12.dp))
-        ManageItem("거래 완료", Icons.Default.Check)
+
+        // 2) 거래 완료 리스트
+        ManageItem(
+            label = "거래 완료",
+            icon = Icons.Default.Check,
+            onClick = { navController.navigate("trade_list") }
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
+
 
         // --------------------------- 교환 + 통계 ---------------------------
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconCard("교환 횟수", Icons.Default.Star)
-            IconCard("장르 통계", Icons.Default.BarChart)
+            // 3) 교환 횟수 화면 이동
+            IconCard(
+                label = "교환 횟수",
+                icon = Icons.Default.Star,
+                onClick = { navController.navigate("exchange_count") }
+            )
+
+            // 4) 장르 통계 (지금은 기능 없음)
+            IconCard(
+                label = "장르 통계",
+                icon = Icons.Default.BarChart,
+                onClick = { /* 추후 구현 */ }
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+
 
         // --------------------------- 나의 선호 장르 ---------------------------
         Text(text = "나의 선호 장르", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -137,6 +159,7 @@ fun MyPageScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+
 
         // --------------------------- 알림 설정 + 로그아웃 ---------------------------
         Row(
@@ -174,17 +197,22 @@ fun MyPageScreen(navController: NavController) {
     }
 }
 
-// -------------------------------------------------------------
-//  🔥 인증 카드 / 통계 카드 공용 UI
-// -------------------------------------------------------------
-@Composable
-fun IconCard(label: String, icon: ImageVector) {
 
+// ---------------------------------------------------------
+// IconCard — 클릭 기능 추가 버전 ⭐
+// ---------------------------------------------------------
+@Composable
+fun IconCard(
+    label: String,
+    icon: ImageVector,
+    onClick: (() -> Unit)? = null
+) {
     Column(
         modifier = Modifier
             .width(150.dp)
             .background(Color.White, RoundedCornerShape(16.dp))
-            .padding(vertical = 20.dp),
+            .padding(vertical = 20.dp)
+            .let { if (onClick != null) it.clickable { onClick() } else it },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -200,20 +228,24 @@ fun IconCard(label: String, icon: ImageVector) {
     }
 }
 
-// -------------------------------------------------------------
-//  🔥 책 등록 / 거래 완료 공용 UI
-// -------------------------------------------------------------
-@Composable
-fun ManageItem(label: String, icon: ImageVector) {
 
+// ---------------------------------------------------------
+// ManageItem — 클릭 가능 최종 버전 ⭐
+// ---------------------------------------------------------
+@Composable
+fun ManageItem(
+    label: String,
+    icon: ImageVector,
+    onClick: (() -> Unit)? = null
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
-            .padding(16.dp),
+            .padding(16.dp)
+            .let { if (onClick != null) it.clickable { onClick() } else it },
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Icon(
             imageVector = icon,
             contentDescription = label,

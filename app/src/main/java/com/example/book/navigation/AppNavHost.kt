@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.book.ui.screens.splash.SplashScreen
 import com.example.book.ui.screens.main.MainScreen
+import com.example.book.Screens.mypage.TradeListScreen
+
 
 @Composable
 fun AppNavHost() {
@@ -25,6 +27,11 @@ fun AppNavHost() {
         }
         composable("exchange_proposal") {
         }
+
+        composable("trade_list") {
+            TradeListScreen()    // ← TradeListScreen.kt 를 호출
+        }
+
 
     }
 }
