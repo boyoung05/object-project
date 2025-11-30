@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 import com.example.book.Screens.BookInfo.BookInfoScreen
 import com.example.book.Screens.Search.SearchScreen
@@ -47,7 +49,19 @@ fun BottomNavHost(
         composable("mypage") { MyPageScreen(navController) }
 
         // 5. 책 상세
-        composable("bookinfo") { BookInfoScreen(navController) }
+        composable(
+            route = "bookinfo/{bookId}",
+            arguments = listOf(
+                navArgument("bookId") {type = NavType.IntType}
+            )
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
+
+            BookInfoScreen(
+                navController = navController,
+                bookId = bookId
+            )
+        }
 
         // 6. 교환 제안 화면
         composable("exchange_proposal") { ExchangeProposalScreen(navController) }
@@ -71,3 +85,10 @@ fun BottomNavHost(
 
     }
 }
+
+/**
+ * 책 상세 navigate 방법
+ * route = "bookinfo/{bookId}"
+ * navArgument("bookId") { type = NavType.StringType }
+ * backStackEntry.arguments?.getString("bookId") 로 값 꺼내서 BookInfoScreen에 전달
+ */
