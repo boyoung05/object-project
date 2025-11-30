@@ -64,7 +64,12 @@ fun SearchScreen(navController: NavController) {
             // 중간 여백
             Spacer(modifier = Modifier.height(16.dp))
             // 2. 필터 영역
-            FilterSection()
+            FilterSection(
+                selectedCondition = selectedCondition,
+                onConditionChange = {selectedCondition = it},
+                selectedMethod = selectedMethod,
+                onMethodChange = {selectedMethod = it}
+            )
             Spacer(modifier = Modifier.height(24.dp))
 
             // 3. 카드형 검색 결과 두 개 정도
