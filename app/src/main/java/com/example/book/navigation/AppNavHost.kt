@@ -23,7 +23,7 @@ fun AppNavHost() {
 
         composable("register") { RegisterScreen(navController) }
 
-        // ⭐ MainScreen에 rootNavController 전달
+        //  MainScreen에 rootNavController 전달
         composable("main") {
             MainScreen(navController)
         }

@@ -18,7 +18,7 @@ import com.example.book.Screens.chat.ChatRoomScreen
 @Composable
 fun BottomNavHost(
     navController: NavHostController,
-    rootNavController: NavHostController,    // ⭐ 추가
+    rootNavController: NavHostController,    //  추가
     paddingValues: PaddingValues
 ) {
     NavHost(
@@ -35,7 +35,7 @@ fun BottomNavHost(
 
         composable("chat") { ChatRoomScreen() }
 
-        // ⭐ MyPageScreen에는 rootNavController 전달
+        //  MyPageScreen에는 rootNavController 전달
         composable("mypage") { MyPageScreen(rootNavController) }
 
 // 책 상세
