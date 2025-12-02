@@ -1,10 +1,11 @@
 package com.example.book.Screens.mypage
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -16,15 +17,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-
+import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun MyPageScreen(navController: NavController) {
+fun MyPageScreen(rootNavController: NavHostController) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFFF6F7FB))
             .padding(horizontal = 20.dp)
     ) {
@@ -79,7 +81,6 @@ fun MyPageScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-
         // --------------------------- 인증 ---------------------------
         Text(text = "인증", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
@@ -95,53 +96,27 @@ fun MyPageScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-
         // --------------------------- 내 책 관리 ---------------------------
         Text(text = "내 책 관리", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 1) 책 등록
-        ManageItem(
-            label = "책 등록",
-            icon = Icons.Default.Book,
-            onClick = { navController.navigate("upload_book") }
-        )
-
+        ManageItem("책 등록", Icons.Default.Book)
         Spacer(modifier = Modifier.height(12.dp))
-
-        // 2) 거래 완료 리스트
-        ManageItem(
-            label = "거래 완료",
-            icon = Icons.Default.Check,
-            onClick = { navController.navigate("trade_list") }
-        )
+        ManageItem("거래 완료", Icons.Default.Check)
 
         Spacer(modifier = Modifier.height(32.dp))
-
 
         // --------------------------- 교환 + 통계 ---------------------------
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 3) 교환 횟수 화면 이동
-            IconCard(
-                label = "교환 횟수",
-                icon = Icons.Default.Star,
-                onClick = { navController.navigate("exchange_count") }
-            )
-
-            // 4) 장르 통계 (지금은 기능 없음)
-            IconCard(
-                label = "장르 통계",
-                icon = Icons.Default.BarChart,
-                onClick = { /* 추후 구현 */ }
-            )
+            IconCard("교환 횟수", Icons.Default.Star)
+            IconCard("장르 통계", Icons.Default.BarChart)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
-
 
         // --------------------------- 나의 선호 장르 ---------------------------
         Text(text = "나의 선호 장르", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -160,13 +135,13 @@ fun MyPageScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-
         // --------------------------- 알림 설정 + 로그아웃 ---------------------------
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
+            // 알림 설정 버튼
             OutlinedButton(
                 modifier = Modifier
                     .weight(1f)
@@ -179,11 +154,21 @@ fun MyPageScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
+            // ---------------- ✔ 로그아웃 버튼 (rootNavController 사용) ----------------
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                onClick = {},
+                onClick = {
+                    FirebaseAuth.getInstance().signOut()
+
+                    // 메인 네비게이션 기준으로 스택 완전 삭제 후 로그인 이동
+                    rootNavController.navigate("login") {
+                        popUpTo("main") { inclusive = true }
+                        popUpTo("splash") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFFF7D8)
@@ -197,22 +182,18 @@ fun MyPageScreen(navController: NavController) {
     }
 }
 
+// -------------------------------------------------------------
+//  🔥 카드 UI functions
+// -------------------------------------------------------------
 
-// ---------------------------------------------------------
-// IconCard — 클릭 기능 추가 버전 ⭐
-// ---------------------------------------------------------
 @Composable
-fun IconCard(
-    label: String,
-    icon: ImageVector,
-    onClick: (() -> Unit)? = null
-) {
+fun IconCard(label: String, icon: ImageVector) {
+
     Column(
         modifier = Modifier
             .width(150.dp)
             .background(Color.White, RoundedCornerShape(16.dp))
-            .padding(vertical = 20.dp)
-            .let { if (onClick != null) it.clickable { onClick() } else it },
+            .padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -228,24 +209,17 @@ fun IconCard(
     }
 }
 
-
-// ---------------------------------------------------------
-// ManageItem — 클릭 가능 최종 버전 ⭐
-// ---------------------------------------------------------
 @Composable
-fun ManageItem(
-    label: String,
-    icon: ImageVector,
-    onClick: (() -> Unit)? = null
-) {
+fun ManageItem(label: String, icon: ImageVector) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-            .let { if (onClick != null) it.clickable { onClick() } else it },
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+
         Icon(
             imageVector = icon,
             contentDescription = label,

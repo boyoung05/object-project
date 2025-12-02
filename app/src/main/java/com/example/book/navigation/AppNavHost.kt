@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.book.ui.screens.splash.SplashScreen
 import com.example.book.ui.screens.main.MainScreen
-import com.example.book.Screens.mypage.TradeListScreen
-
+import com.example.book.ui.screens.auth.LoginScreen
+import com.example.book.ui.screens.auth.RegisterScreen
 
 @Composable
 fun AppNavHost() {
@@ -17,21 +17,15 @@ fun AppNavHost() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("splash") {
-            SplashScreen(navController)
-        }
+        composable("splash") { SplashScreen(navController) }
 
-        // 🔥 MainScreen은 navController를 받지 않음
+        composable("login") { LoginScreen(navController) }
+
+        composable("register") { RegisterScreen(navController) }
+
+        // ⭐ MainScreen에 rootNavController 전달
         composable("main") {
-            MainScreen()
+            MainScreen(navController)
         }
-        composable("exchange_proposal") {
-        }
-
-        composable("trade_list") {
-            TradeListScreen()    // ← TradeListScreen.kt 를 호출
-        }
-
-
     }
 }
