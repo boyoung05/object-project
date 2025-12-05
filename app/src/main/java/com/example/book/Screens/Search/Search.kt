@@ -72,7 +72,7 @@ fun SearchScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 3. 카드형 검색 결과 두 개 정도
+            // 3. 카드형 검색 결과 두  개 정도
             ResultCardsRow(
                 books = filteredBooks,
                 onCardClick = { book ->
