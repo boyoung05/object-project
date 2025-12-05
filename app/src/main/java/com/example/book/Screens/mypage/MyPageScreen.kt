@@ -1,5 +1,6 @@
 package com.example.book.Screens.mypage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -101,9 +102,13 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ManageItem("책 등록", Icons.Default.Book)
+        ManageItem("책 등록", Icons.Default.Book) {
+            rootNavController.navigate("uploadBook")
+        }
         Spacer(modifier = Modifier.height(12.dp))
-        ManageItem("거래 완료", Icons.Default.Check)
+        ManageItem("거래 완료", Icons.Default.Check) {
+            // 거래 완료 화면 이동 시 여기에 추가
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -210,12 +215,13 @@ fun IconCard(label: String, icon: ImageVector) {
 }
 
 @Composable
-fun ManageItem(label: String, icon: ImageVector) {
+fun ManageItem(label: String, icon: ImageVector, onClick: () -> Unit) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
+            .clickable{ onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
