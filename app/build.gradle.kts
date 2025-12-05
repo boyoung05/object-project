@@ -87,6 +87,5 @@ dependencies {
 
     // 지도 의존성 추가
     implementation("com.google.android.gms:play-services-maps:19.0.0")
-    implementation("com.google.maps.android:maps-compose:6.1.1")
-
+    implementation("com.google.maps.android:maps-compose:6")
 }
