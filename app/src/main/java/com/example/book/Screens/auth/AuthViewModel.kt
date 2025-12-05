@@ -1,14 +1,16 @@
 package com.example.book.auth
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
+// 25년 7월 이후로 firebase가 ktx 모듈을 지원을 하지 않는다고 해서
+// 최신 firebase 모듈 스타일로 수정했습니다.
 
 class AuthViewModel : ViewModel() {
 
-    private val auth = Firebase.auth
-    private val db = Firebase.firestore
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun register(
         email: String,

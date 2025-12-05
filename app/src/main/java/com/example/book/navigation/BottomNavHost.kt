@@ -13,6 +13,7 @@ import com.example.book.Screens.Search.SearchScreen
 import com.example.book.Screens.home.HomeScreen
 import com.example.book.Screens.mypage.MyPageScreen
 import com.example.book.Screens.exchange.ExchangeProposalScreen
+import com.example.book.Screens.mypage.UploadBookScreen
 import com.example.book.Screens.chat.ChatRoomScreen
 
 @Composable
@@ -35,10 +36,13 @@ fun BottomNavHost(
 
         composable("chat") { ChatRoomScreen() }
 
-        //  MyPageScreen에는 rootNavController 전달
-        composable("mypage") { MyPageScreen(rootNavController) }
+        //  수정함 (원래: MyPageScreen에는 rootNavController 전달)
+        composable("mypage") { MyPageScreen(navController) }
 
-// 책 상세
+        // 책 등록 화면
+        composable ("uploadBook") {UploadBookScreen(navController)}
+
+        // 책 상세
         composable("bookinfo/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")?.toInt() ?: -1
             BookInfoScreen(navController, bookId)
