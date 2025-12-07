@@ -4,56 +4,114 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.book.model.Book
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 @Composable
 fun BookInfoScreen(
-    navController: NavController
-    ) {
+    navController: NavController,
+    bookId: String
+) {
     val scrollState = rememberScrollState()
+    val db = remember { FirebaseFirestore.getInstance() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF6F6F6))
-            .verticalScroll(scrollState)
-            .padding(30.dp)
-    ) {
+    var book by remember { mutableStateOf<Book?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-        // 상단 타이틀
-        Text(
-            text = "책 정보",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF222222)
-        )
+    // 전달받은 id로 Firestore에서 조회
+    LaunchedEffect(bookId) {
+        db.collection("books")
+            .document(bookId)
+            .get()
+            .addOnSuccessListener { a ->
+                book = a.toObject(Book::class.java)
+                isLoading = false
+            }
+            .addOnFailureListener { e ->
+                errorMessage = e.message
+                isLoading = false
+            }
 
-        Spacer(modifier = Modifier.height(12.dp))
+    }
 
-        // 1. 책 카드 영역
-        BookInfoCard()
-        Spacer(modifier = Modifier.height(24.dp))
+    when {
+        isLoading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
-        // 2. 상태 표시 섹션
-        //StatusSection()
-        //Spacer(modifier = Modifier.height(24.dp))
+        errorMessage != null || book == null -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("책 정보를 불러올 수 없습니다.")
+            }
+        }
 
-        // 3. 하이라이트 정보
-        HighlightSection()
-        Spacer(modifier = Modifier.height(16.dp))
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6))
+                    .verticalScroll(scrollState)
+                    .padding(30.dp)
+            ) {
+                // 상단 타이틀
+                Text(
+                    text = "책 정보",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF222222)
+                )
 
-        // 4. 소유자 정보
-        OwnerSection()
-        Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-        // 5. 교환 제안하기 버튼
-        ExchangeButton(navController = navController)
+                // 1. 책 카드 영역
+                BookInfoCard(book = book!!)
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 2. 상태 표시 섹션
+                //StatusSection()
+                //Spacer(modifier = Modifier.height(24.dp))
+
+                // 3. 하이라이트 정보
+                HighlightSection()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 4. 소유자 정보
+                OwnerSection()
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // 5. 교환 제안하기 버튼
+                ExchangeButton(navController = navController)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
 }

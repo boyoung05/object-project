@@ -74,19 +74,21 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation(platform("androidx.compose:compose-bom:2024.09.01"))
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.activity:activity-compose")
 
     // import the firebase BoM
-    //implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
 
     // When using the BoM, don't specify versions in Firebase dependencies
     //implementation("com.google.firebase:firebase-analytics")
 
     // firebase 의존성 추가
-    implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
-    implementation("com.google.firebase:firebase-firestore-ktx:25.1.0")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
     // 지도 의존성 추가
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.maps.android:maps-compose:6.1.1")
 
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }

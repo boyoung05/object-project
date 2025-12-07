@@ -24,11 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FilterSection () {
+fun FilterSection (
+    selectedCondition: String,
+    onConditionChange: (String) -> Unit,
+    selectedMethod: String,
+    onMethodChange: (String) -> Unit
+) {
     Column {
         Text(
             text = "필터",
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF333333)
         )
@@ -42,26 +47,36 @@ fun FilterSection () {
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        var selectedCondition = remember { mutableStateOf("")}
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterButton(
                 text = "상",
-                selected = selectedCondition.value == "상",
-                onClick = {selectedCondition.value = "상"}
+                selected = selectedCondition == "상",
+                onClick = {
+                    onConditionChange(
+                        if(selectedCondition == "상") "" else "상"
+                    )
+                }
             )
             FilterButton(
                 text = "중",
-                selected = selectedCondition.value == "중",
-                onClick = {selectedCondition.value = "중"}
+                selected = selectedCondition == "중",
+                onClick = {
+                    onConditionChange (
+                        if(selectedCondition == "중")"" else "중"
+                    )
+                }
             )
             FilterButton(
                 text = "하",
-                selected = selectedCondition.value == "하",
-                onClick = {selectedCondition.value = "하"}
+                selected = selectedCondition == "하",
+                onClick = {
+                    onConditionChange (
+                        if(selectedCondition == "하")"" else "하"
+                    )
+                }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -73,23 +88,32 @@ fun FilterSection () {
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        var selectedMethod = remember { mutableStateOf("")}
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterButton(
                 text = "직거래",
-                selected = selectedMethod.value == "직거래",
-                onClick = {selectedMethod.value = "직거래"}
+                selected = selectedMethod== "직거래",
+                onClick = {
+                    onMethodChange (
+                        if(selectedMethod == "직거래")"" else "직거래"
+                    )
+                }
             )
             FilterButton(
                 text = "택배",
-                selected = selectedMethod.value == "택배",
-                onClick = {selectedMethod.value = "택배"}
+                selected = selectedMethod == "택배",
+                onClick = {
+                    onMethodChange (
+                        if(selectedMethod == "택배")"" else "택배"
+                    )
+                }
             )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
     }
 }
 
@@ -99,19 +123,19 @@ fun FilterButton(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if(selected) Color(0xFF4CAF50) else Color.White
+    val backgroundColor = if(selected) Color(0xFFB5D350) else Color.White
     val textColor = if(selected) Color.White else Color(0xFF555555)
 
     Box(
         modifier = Modifier
-            .height(32.dp)
+            .height(38.dp)
             .padding(vertical = 2.dp)
             .border(
                 width = 1.dp,
                 color = if(selected) Color.White else Color(0xFFE0E0E0),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(10.dp)
             )
-            .background(backgroundColor, RoundedCornerShape(16.dp))
+            .background(backgroundColor, RoundedCornerShape(10.dp))
             .clickable {onClick()}
             .padding(horizontal = 14.dp),
         contentAlignment = Alignment.Center

@@ -11,19 +11,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.book.model.Book
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
-fun BookInfoCard() {
+fun BookInfoCard(
+    book: Book
+) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
-
     ) {
         Column(
             modifier = Modifier
@@ -37,7 +39,7 @@ fun BookInfoCard() {
                     .padding(horizontal = 10.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "상태: 상",
+                    text = "상태: ${book.condition}",
                     fontSize = 12.sp,
                     color = Color(0xFF6C8C1B),
                     fontWeight = FontWeight.SemiBold
@@ -45,7 +47,7 @@ fun BookInfoCard() {
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 책 표지 + 설명
+            // 책 표지
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -53,18 +55,18 @@ fun BookInfoCard() {
                     .background(Color(0xFFF0F0F0), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                // 나중에 실제 이미지 들어갈 자리
-                Text(
-                    text = "책 표지\n(이미지 자리)",
-                    textAlign = TextAlign.Center,
-                    fontSize = 13.sp,
-                    color = Color(0xFF888888)
+                AsyncImage(
+                    model = book.imageUrl,
+                    contentDescription = book.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "책 제목: 스토너",
+                text = book.title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF333333)
@@ -72,7 +74,7 @@ fun BookInfoCard() {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "저자: 존 윌리엄스 | 출판사: 알에이치코리아 |",
+                text = "저자: ${book.author} | 출판사: ${book.publisher}",
                 fontSize = 12.sp,
                 color = Color(0xFF777777)
             )
