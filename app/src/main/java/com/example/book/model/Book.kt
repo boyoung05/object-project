@@ -1,7 +1,5 @@
 package com.example.book.model
 
-import com.google.firebase.events.Publisher
-
 data class Book(
     val id: String = "",
     val title: String = "",

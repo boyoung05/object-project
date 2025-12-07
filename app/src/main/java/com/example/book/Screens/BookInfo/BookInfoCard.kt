@@ -1,6 +1,5 @@
 package com.example.book.Screens.BookInfo
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,24 +10,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.book.data.Book
+import com.example.book.model.Book
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun BookInfoCard(
-    book: Book // 선택된 책 정보 받기
+    book: Book
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
-
     ) {
         Column(
             modifier = Modifier
@@ -50,7 +47,7 @@ fun BookInfoCard(
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 책 표지 + 설명
+            // 책 표지
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -58,14 +55,14 @@ fun BookInfoCard(
                     .background(Color(0xFFF0F0F0), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                // 나중에 실제 이미지 들어갈 자리
-                Image(
-                    painter = painterResource(id = book.thumbnailResId),
+                AsyncImage(
+                    model = book.imageUrl,
                     contentDescription = book.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
             }
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -77,7 +74,7 @@ fun BookInfoCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "저자: ${book.author} | 출판사: ${book.publisher} |",
+                text = "저자: ${book.author} | 출판사: ${book.publisher}",
                 fontSize = 12.sp,
                 color = Color(0xFF777777)
             )

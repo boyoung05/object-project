@@ -4,8 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,69 +19,99 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.book.data.Book
-import com.example.book.data.dummyBooks
+import com.example.book.model.Book
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 @Composable
 fun BookInfoScreen(
     navController: NavController,
-    bookId: Int
+    bookId: String
 ) {
     val scrollState = rememberScrollState()
+    val db = remember { FirebaseFirestore.getInstance() }
 
-    // 전달받은 bookId로 실제 책 찾기
-    val book: Book? = dummyBooks.firstOrNull { it.id == bookId }
+    var book by remember { mutableStateOf<Book?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // 책을 못 찾았을 때 대비
-    if (book == null) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF6F6F6))
-                .padding(30.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("책 정보를 찾을 수 없습니다.")
-        }
-        return
+    // 전달받은 id로 Firestore에서 조회
+    LaunchedEffect(bookId) {
+        db.collection("books")
+            .document(bookId)
+            .get()
+            .addOnSuccessListener { a ->
+                book = a.toObject(Book::class.java)
+                isLoading = false
+            }
+            .addOnFailureListener { e ->
+                errorMessage = e.message
+                isLoading = false
+            }
+
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF6F6F6))
-            .verticalScroll(scrollState)
-            .padding(30.dp)
-    ) {
-        // 상단 타이틀
-        Text(
-            text = "책 정보",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF222222)
-        )
+    when {
+        isLoading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        errorMessage != null || book == null -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("책 정보를 불러올 수 없습니다.")
+            }
+        }
 
-        // 1. 책 카드 영역
-        BookInfoCard(book = book)
-        Spacer(modifier = Modifier.height(24.dp))
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF6F6F6))
+                    .verticalScroll(scrollState)
+                    .padding(30.dp)
+            ) {
+                // 상단 타이틀
+                Text(
+                    text = "책 정보",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF222222)
+                )
 
-        // 2. 상태 표시 섹션
-        //StatusSection()
-        //Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-        // 3. 하이라이트 정보
-        HighlightSection()
-        Spacer(modifier = Modifier.height(16.dp))
+                // 1. 책 카드 영역
+                BookInfoCard(book = book!!)
+                Spacer(modifier = Modifier.height(24.dp))
 
-        // 4. 소유자 정보
-        OwnerSection()
-        Spacer(modifier = Modifier.height(32.dp))
+                // 2. 상태 표시 섹션
+                //StatusSection()
+                //Spacer(modifier = Modifier.height(24.dp))
 
-        // 5. 교환 제안하기 버튼
-        ExchangeButton(navController = navController)
-        Spacer(modifier = Modifier.height(16.dp))
+                // 3. 하이라이트 정보
+                HighlightSection()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 4. 소유자 정보
+                OwnerSection()
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // 5. 교환 제안하기 버튼
+                ExchangeButton(navController = navController)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
 }

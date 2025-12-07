@@ -4,29 +4,49 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.book.Screens.BookInfo.BookInfoScreen
-import com.example.book.data.Book
-import com.example.book.data.dummyBooks
+import com.example.book.model.Book
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun SearchScreen(navController: NavController) {
-    var showBookInfo by remember { mutableStateOf(false) }
+
     var query by remember { mutableStateOf("") }
 
     // 필터 상태 모음
     var selectedCondition by remember {mutableStateOf("")} // 상, 중, 하
     var selectedMethod by remember { mutableStateOf("") } // 직거래, 택배
 
-    // 선택된 책
-    var selectedBook by remember { mutableStateOf<Book?>(null) }
+    // Firestore에서 가져온 전체 책 목록
+    var allBooks by remember { mutableStateOf<List<Book>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // 전체 책 목록
-    val allBooks = remember { dummyBooks }
+    val scrollState = rememberScrollState()
+    val db = remember { FirebaseFirestore.getInstance() }
+
+    // Firestore에서 전체 책 가져오기
+    LaunchedEffect(Unit) {
+        db.collection("books")
+            .get()
+            .addOnSuccessListener { a ->
+                val list = a.documents.mapNotNull { b ->
+                    b.toObject(Book::class.java)
+                }
+                allBooks = list
+                isLoading = false
+            }
+            .addOnFailureListener { e ->
+                isLoading = false
+                errorMessage = e.message
+            }
+    }
 
     // 필터 + 정렬 적용한 결과 리스트
     val filteredBooks = allBooks
@@ -39,11 +59,8 @@ fun SearchScreen(navController: NavController) {
             selectedCondition.isBlank() || book.condition == selectedCondition
         }
         .filter { book ->
-            selectedMethod.isBlank() || book.method == selectedMethod
+            selectedMethod.isBlank() || book.tradeMethod == selectedMethod
         }
-
-        // 스크롤 가능하게
-        val scrollState = rememberScrollState()
 
         Column(
             modifier = Modifier
@@ -72,13 +89,27 @@ fun SearchScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 3. 카드형 검색 결과 두  개 정도
-            ResultCardsRow(
-                books = filteredBooks,
-                onCardClick = { book ->
-                    navController.navigate("bookinfo/${book.id}") // 상세 화면 페이지(bookinfo)로 navigate
+            // 3. 카드형 결과
+            when {
+                isLoading -> {
+                    CircularProgressIndicator()
                 }
-            )
+                errorMessage != null -> {
+                    Text(text = "에러 : $errorMessage")
+                }
+                filteredBooks.isEmpty() -> {
+                    Text(text = "조건에 맞는 책이 없어요.")
+                }
+                else -> {
+                    ResultCardsRow(
+                        books = filteredBooks,
+                        onCardClick = { book ->
+                            navController.navigate("bookinfo/${book.id}") // 상세 화면 페이지(bookinfo)로 navigate
+                        }
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             // 5. 정렬 기준 + 카드보기/목록보기 버튼 자리

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.book.Screens.BookInfo.BookInfoScreen
 import com.example.book.Screens.Search.SearchScreen
 import com.example.book.Screens.home.HomeScreen
@@ -43,8 +45,13 @@ fun BottomNavHost(
         composable ("uploadBook") {UploadBookScreen(navController)}
 
         // 책 상세
-        composable("bookinfo/{bookId}") { backStackEntry ->
-            val bookId = backStackEntry.arguments?.getString("bookId")?.toInt() ?: -1
+        composable(
+            route = "bookinfo/{bookId}",
+            arguments = listOf(
+                navArgument("bookId") { type = NavType.StringType}
+            )
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId") ?: ""
             BookInfoScreen(navController, bookId)
         }
 
