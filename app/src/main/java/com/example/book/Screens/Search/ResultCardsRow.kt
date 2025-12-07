@@ -1,8 +1,17 @@
 package com.example.book.Screens.Search
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,18 +23,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import androidx.compose.ui.layout.ContentScale
-import com.example.book.model.Book
-import androidx.compose.ui.text.style.TextOverflow
+import com.example.book.data.Book
 
 @Composable
 fun ResultCardsRow(
-    books: List<Book>,
-    onCardClick: (Book) -> Unit
+    books: List<Book>, // 필터링 된 책 리스트
+    onCardClick: (Book) -> Unit // 어떤 책을 클릭했는지 넘겨줌
 ) {
     Column {
         Text(
@@ -36,45 +45,54 @@ fun ResultCardsRow(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        LazyRow(
+        LazyRow (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
+
         ) {
             items(books) { book ->
+                val painter = painterResource(id = book.thumbnailResId)
+
                 ImageCard(
-                    book = book,
+                    painter = painter,
+                    contentDescription = book.title,
+                    title = "${book.title}\n${book.condition}: ${book.method} 가능",
                     modifier = Modifier
                         .width(160.dp)
                         .height(210.dp),
                     onClick = { onCardClick(book) }
                 )
+
             }
+
         }
+
     }
 }
 
 @Composable
 private fun ImageCard(
-    book: Book,
+    painter: Painter,
+    contentDescription: String,
+    title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier.clickable { onClick() },
+        modifier = modifier
+            .clickable {onClick()}, // 클릭 시 콜백 실행
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-
-            // Firebase Storage 이미지 로딩
-            AsyncImage(
-                model = book.imageUrl,          // Firestore에 저장된 downloadUrl
-                contentDescription = book.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+            // 책 이미지
+            Image(
+                painter = painter,
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
-
-            // 아래쪽 그라데이션
+            // 아래쪽에 어두운 그라데이션
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -88,37 +106,21 @@ private fun ImageCard(
                         )
                     )
             )
-
-            // 제목 + 상태/거래 방식
+            // 제목 텍스트 (왼쪽 아래 정렬)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(12.dp),
                 contentAlignment = Alignment.BottomStart
             ) {
-                Column {
-
-                    // 책 제목
-                    Text(
-                        text = book.title,
-                        color = Color.White,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(modifier = Modifier.height((2.dp)))
-
-                    // 상태 + 거래 방식
-                    Text(
-                        text = "${book.condition} · ${book.tradeMethod}",
-                        color = Color(0xFFEEEEEE),
-                        fontSize = 12.sp
-                    )
-                }
-
+                Text (
+                    text = title,
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
+
 }

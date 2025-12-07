@@ -1,12 +1,9 @@
 package com.example.book.Screens.mypage
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -18,16 +15,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.NavController
 
+// -------------------------------------------------------------
+//  🔥 마이페이지 메인 화면
+// -------------------------------------------------------------
 @Composable
-fun MyPageScreen(rootNavController: NavHostController) {
+fun MyPageScreen(navController: NavController) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .background(Color(0xFFF6F7FB))
             .padding(horizontal = 20.dp)
     ) {
@@ -44,6 +42,7 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
 
+                // 프로필 아이콘
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "profile",
@@ -67,7 +66,10 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFFFFF3B8), RoundedCornerShape(12.dp))
+                            .background(
+                                Color(0xFFFFF3B8),
+                                RoundedCornerShape(12.dp)
+                            )
                             .padding(horizontal = 12.dp, vertical = 4.dp)
                     ) {
                         Text(
@@ -102,13 +104,9 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ManageItem("책 등록", Icons.Default.Book) {
-            rootNavController.navigate("uploadBook")
-        }
+        ManageItem("책 등록", Icons.Default.Book)
         Spacer(modifier = Modifier.height(12.dp))
-        ManageItem("거래 완료", Icons.Default.Check) {
-            // 거래 완료 화면 이동 시 여기에 추가
-        }
+        ManageItem("거래 완료", Icons.Default.Check)
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -146,7 +144,6 @@ fun MyPageScreen(rootNavController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            // 알림 설정 버튼
             OutlinedButton(
                 modifier = Modifier
                     .weight(1f)
@@ -159,21 +156,11 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // ---------------- ✔ 로그아웃 버튼 (rootNavController 사용) ----------------
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                onClick = {
-                    FirebaseAuth.getInstance().signOut()
-
-                    // 메인 네비게이션 기준으로 스택 완전 삭제 후 로그인 이동
-                    rootNavController.navigate("login") {
-                        popUpTo("main") { inclusive = true }
-                        popUpTo("splash") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
+                onClick = {},
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFFF7D8)
@@ -188,9 +175,8 @@ fun MyPageScreen(rootNavController: NavHostController) {
 }
 
 // -------------------------------------------------------------
-//  🔥 카드 UI functions
+//  🔥 인증 카드 / 통계 카드 공용 UI
 // -------------------------------------------------------------
-
 @Composable
 fun IconCard(label: String, icon: ImageVector) {
 
@@ -214,14 +200,16 @@ fun IconCard(label: String, icon: ImageVector) {
     }
 }
 
+// -------------------------------------------------------------
+//  🔥 책 등록 / 거래 완료 공용 UI
+// -------------------------------------------------------------
 @Composable
-fun ManageItem(label: String, icon: ImageVector, onClick: () -> Unit) {
+fun ManageItem(label: String, icon: ImageVector) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
-            .clickable{ onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
