@@ -33,7 +33,7 @@ fun SearchTopBar(
 ) {
     Column {
         Text(
-            text = "책 제목/저자/ISBN 검색",
+            text = "책 제목/저자 검색",
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF333333)
@@ -84,7 +84,7 @@ fun SearchTopBar(
                         ){
                             if(query.isEmpty()) {
                                 Text(
-                                    text = "제목 또는 저자 또는 ISBN 입력",
+                                    text = "제목 또는 저자 입력",
                                     color = Color(0xFFB0B0B0),
                                     fontSize = 13.sp
                                 )
