@@ -6,8 +6,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.book.ui.screens.splash.SplashScreen
 import com.example.book.ui.screens.main.MainScreen
-import com.example.book.ui.screens.auth.LoginScreen
-import com.example.book.ui.screens.auth.RegisterScreen
 
 @Composable
 fun AppNavHost() {
@@ -17,15 +15,16 @@ fun AppNavHost() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("splash") { SplashScreen(navController) }
-
-        composable("login") { LoginScreen(navController) }
-
-        composable("register") { RegisterScreen(navController) }
-
-        //  MainScreen에 rootNavController 전달
-        composable("main") {
-            MainScreen(navController)
+        composable("splash") {
+            SplashScreen(navController)
         }
+
+        // 🔥 MainScreen은 navController를 받지 않음
+        composable("main") {
+            MainScreen()
+        }
+        composable("exchange_proposal") {
+        }
+
     }
 }
