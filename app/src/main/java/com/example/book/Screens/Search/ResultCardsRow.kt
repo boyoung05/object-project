@@ -1,6 +1,7 @@
 package com.example.book.Screens.Search
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,13 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.ui.layout.ContentScale
 import com.example.book.model.Book
-import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun ResultCardsRow(
@@ -41,8 +41,11 @@ fun ResultCardsRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(books) { book ->
+
                 ImageCard(
-                    book = book,
+                    imageUrl = book.imageUrl,
+                    title = book.title,
+                    subtitle = "${book.condition} · ${book.tradeMethod} 가능",
                     modifier = Modifier
                         .width(160.dp)
                         .height(210.dp),
@@ -53,9 +56,12 @@ fun ResultCardsRow(
     }
 }
 
+
 @Composable
 private fun ImageCard(
-    book: Book,
+    imageUrl: String,
+    title: String,
+    subtitle: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -66,15 +72,15 @@ private fun ImageCard(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 
-            // Firebase Storage 이미지 로딩
+            // 책 이미지
             AsyncImage(
-                model = book.imageUrl,          // Firestore에 저장된 downloadUrl
-                contentDescription = book.title,
+                model = imageUrl,
+                contentDescription = title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
 
-            // 아래쪽 그라데이션
+            // 아래쪽에 어두운 그라데이션
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -89,35 +95,29 @@ private fun ImageCard(
                     )
             )
 
-            // 제목 + 상태/거래 방식
-            Box(
+            // 제목 + 상태/거래 방식 (왼쪽 아래 정렬)
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(12.dp),
-                contentAlignment = Alignment.BottomStart
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.Start
             ) {
-                Column {
-
-                    // 책 제목
-                    Text(
-                        text = book.title,
-                        color = Color.White,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(modifier = Modifier.height((2.dp)))
-
-                    // 상태 + 거래 방식
-                    Text(
-                        text = "${book.condition} · ${book.tradeMethod}",
-                        color = Color(0xFFEEEEEE),
-                        fontSize = 12.sp
-                    )
-                }
-
+                Text(
+                    text = title,
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,                               // 제목은 한 줄만
+                    overflow = TextOverflow.Ellipsis            // 길면 … 처리
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,                            // "상 · 직거래 가능" 같은 거
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    maxLines = 1
+                )
             }
         }
     }

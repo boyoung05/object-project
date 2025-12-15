@@ -85,10 +85,12 @@ dependencies {
     // firebase 의존성 추가
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
 
     // 지도 의존성 추가
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.maps.android:maps-compose:6.1.1")
 
-    implementation("io.coil-kt:coil-compose:2.7.0")
 }

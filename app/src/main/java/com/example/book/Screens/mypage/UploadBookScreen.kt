@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import com.example.book.model.Book
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
 @Composable
@@ -45,6 +46,7 @@ fun UploadBookScreen(navController: NavController) {
     // Firebase
     val db = FirebaseFirestore.getInstance()
     val auth = FirebaseAuth.getInstance()
+    val storage = FirebaseStorage.getInstance()
     val currentUser = auth.currentUser
     val ownerId = currentUser?.uid ?: "" // 현재 로그인한 사용자 uid
 
@@ -101,13 +103,13 @@ fun UploadBookScreen(navController: NavController) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        )  {
+        ) {
             conditionOptions.forEach { option ->
                 val selected = (condition == option)
                 OutlinedButton(
-                    onClick = {condition = option},
+                    onClick = { condition = option },
                     modifier = Modifier.weight(1f),
-                    colors = if(selected) {
+                    colors = if (selected) {
                         ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                             contentColor = MaterialTheme.colorScheme.primary
@@ -269,15 +271,39 @@ fun UploadBookScreen(navController: NavController) {
 
                 // 1) 이미지가 선택된 경우: Storage에 먼저 업로드
                 if (pickedImage != null) {
-                    // 외부 업로드 없이, 로컬 Uri 문자열만 저장
-                    val imageUrl = pickedImage.toString()
-                    saveBook(imageUrl)
+                    val go2storage = storage.reference
+                    val image = go2storage.child("bookImages/$newId.jpg")
+
+                    image.putFile(pickedImage)
+                        .addOnSuccessListener {
+                            // 업로드 성공 -> 다운로드 URL 가져옴
+                            image.downloadUrl
+                                .addOnSuccessListener { uri ->
+                                    val downloadUrl = uri.toString()
+                                    saveBook(downloadUrl)
+                                }
+                                .addOnFailureListener { e ->
+                                    isLoading = false
+                                    Toast.makeText(
+                                        context,
+                                        "이미지 URL 가져오기 실패: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            isLoading = false
+                            Toast.makeText(
+                                context,
+                                "이미지 업로드 실패: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                 } else {
-                    // 사진을 고르지 않은 경우
+                    //2) 사진 업로드 하지 않은 경우
                     saveBook(imageUrl = "")
                 }
             }
-
         ) {
             Text(if (isLoading) "등록 중" else "등록하기")
         }
