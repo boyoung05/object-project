@@ -32,31 +32,47 @@ fun BookInfoScreen(
     val db = remember { FirebaseFirestore.getInstance() }
 
     var book by remember { mutableStateOf<Book?>(null) }
+    var ownerNickname by remember { mutableStateOf<String?>(null) }
+    var ownerSchool by remember { mutableStateOf<String?>(null) }
+
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // 전달받은 id로 Firestore에서 조회
     LaunchedEffect(bookId) {
         db.collection("books")
             .document(bookId)
             .get()
-            .addOnSuccessListener { a ->
-                book = a.toObject(Book::class.java)
-                isLoading = false
+            .addOnSuccessListener { doc ->
+                val fetchedBook = doc.toObject(Book::class.java)
+                book = fetchedBook
+
+                // 🔥 소유자 정보 조회
+                fetchedBook?.ownerId?.let { uid ->
+                    db.collection("users")
+                        .document(uid)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
+                            ownerNickname = userDoc.getString("nickname")
+                            ownerSchool = userDoc.getString("school")
+                            isLoading = false
+                        }
+                        .addOnFailureListener {
+                            isLoading = false
+                        }
+                } ?: run {
+                    isLoading = false
+                }
             }
             .addOnFailureListener { e ->
                 errorMessage = e.message
                 isLoading = false
             }
-
     }
 
     when {
         isLoading -> {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF6F6F6)),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -65,9 +81,7 @@ fun BookInfoScreen(
 
         errorMessage != null || book == null -> {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF6F6F6)),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("책 정보를 불러올 수 없습니다.")
@@ -78,39 +92,32 @@ fun BookInfoScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF6F6F6))
                     .verticalScroll(scrollState)
                     .padding(30.dp)
             ) {
-                // 상단 타이틀
                 Text(
                     text = "책 정보",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF222222)
+                    fontWeight = FontWeight.SemiBold
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // 1. 책 카드 영역
                 BookInfoCard(book = book!!)
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 2. 상태 표시 섹션
-                //StatusSection()
-                //Spacer(modifier = Modifier.height(24.dp))
-
-                // 3. 하이라이트 정보
                 HighlightSection()
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 4. 소유자 정보
-                OwnerSection()
+                // 🔥 실제 소유자 정보 전달
+                OwnerSection(
+                    nickname = ownerNickname ?: "알 수 없음",
+                    school = ownerSchool ?: "학교 정보 없음"
+                )
+
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 5. 교환 제안하기 버튼
                 ExchangeButton(navController = navController)
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

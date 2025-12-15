@@ -5,8 +5,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,11 +22,11 @@ import java.util.UUID
 @Composable
 fun UploadBookScreen(navController: NavController) {
 
+    // -------------------- 입력 상태 --------------------
     var title by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var publisher by remember { mutableStateOf("") }
 
-    // 선택 항목들
     val conditionOptions = listOf("상", "중", "하")
     val tradeMethodOptions = listOf("직거래", "택배")
     val categoryOptions = listOf("에세이", "소설", "교재")
@@ -35,38 +35,33 @@ fun UploadBookScreen(navController: NavController) {
     var tradeMethod by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
 
-    // 선택된 이미지 Uri
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-
-    // 로딩 상태
     var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
-    // Firebase
+    // -------------------- Firebase --------------------
     val db = FirebaseFirestore.getInstance()
-    val auth = FirebaseAuth.getInstance()
     val storage = FirebaseStorage.getInstance()
-    val currentUser = auth.currentUser
-    val ownerId = currentUser?.uid ?: "" // 현재 로그인한 사용자 uid
 
-    // 갤러리에서 이미지 하나 선택하는 것
+    // -------------------- 이미지 선택 --------------------
     val imagePick = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    ) { uri ->
         imageUri = uri
     }
 
+    // -------------------- UI --------------------
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        Text(text = "📚 책 등록", style = MaterialTheme.typography.headlineSmall)
+
+        Text("📚 책 등록", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 책 제목
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -76,7 +71,6 @@ fun UploadBookScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 저자
         OutlinedTextField(
             value = author,
             onValueChange = { author = it },
@@ -86,7 +80,6 @@ fun UploadBookScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 출판사
         OutlinedTextField(
             value = publisher,
             onValueChange = { publisher = it },
@@ -96,137 +89,108 @@ fun UploadBookScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 도서 상태 버튼 선택
-        Text(text = "도서 상태", style = MaterialTheme.typography.bodyLarge)
+        // -------------------- 도서 상태 --------------------
+        Text("도서 상태")
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            conditionOptions.forEach { option ->
-                val selected = (condition == option)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            conditionOptions.forEach {
                 OutlinedButton(
-                    onClick = { condition = option },
                     modifier = Modifier.weight(1f),
-                    colors = if (selected) {
+                    onClick = { condition = it },
+                    colors = if (condition == it)
                         ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         )
-                    } else {
-                        ButtonDefaults.outlinedButtonColors()
-                    }
-                ) {
-                    Text(option)
-                }
+                    else ButtonDefaults.outlinedButtonColors()
+                ) { Text(it) }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 거래 방식 버튼 선택
-        Text(text = "거래 방식", style = MaterialTheme.typography.bodyLarge)
+        // -------------------- 거래 방식 --------------------
+        Text("거래 방식")
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            tradeMethodOptions.forEach { option ->
-                val selected = (tradeMethod == option)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            tradeMethodOptions.forEach {
                 OutlinedButton(
-                    onClick = { tradeMethod = option },
                     modifier = Modifier.weight(1f),
-                    colors = if (selected) {
+                    onClick = { tradeMethod = it },
+                    colors = if (tradeMethod == it)
                         ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         )
-                    } else {
-                        ButtonDefaults.outlinedButtonColors()
-                    }
-                ) {
-                    Text(option)
-                }
+                    else ButtonDefaults.outlinedButtonColors()
+                ) { Text(it) }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 도서 종류 버튼 선택
-        Text(text = "도서 종류", style = MaterialTheme.typography.bodyLarge)
+        // -------------------- 도서 종류 --------------------
+        Text("도서 종류")
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            categoryOptions.forEach { option ->
-                val selected = (category == option)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            categoryOptions.forEach {
                 OutlinedButton(
-                    onClick = { category = option },
                     modifier = Modifier.weight(1f),
-                    colors = if (selected) {
+                    onClick = { category = it },
+                    colors = if (category == it)
                         ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         )
-                    } else {
-                        ButtonDefaults.outlinedButtonColors()
-                    }
-                ) {
-                    Text(option)
-                }
+                    else ButtonDefaults.outlinedButtonColors()
+                ) { Text(it) }
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 사진 선택 버튼
+        // -------------------- 이미지 --------------------
         Button(
-            onClick = {
-                imagePick.launch("image/*")
-            },
+            onClick = { imagePick.launch("image/*") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                if (imageUri != null) "사진 다시 선택하기"
-                else "책 사진 선택하기"
-            )
+            Text(if (imageUri != null) "사진 다시 선택하기" else "책 사진 선택하기")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 등록 버튼
+        // -------------------- 등록 버튼 --------------------
         Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading,
             onClick = {
+
+                // 🔐 로그인 상태 재확인 (핵심)
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser == null) {
+                    Toast.makeText(context, "로그인 후 책을 등록할 수 있어요.", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                val ownerId = currentUser.uid
+
                 // 유효성 검사
                 if (title.isBlank() || author.isBlank() || publisher.isBlank()) {
-                    Toast.makeText(context, "제목 / 저자 / 출판사는 필수로 입력해 주세요.", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "제목 / 저자 / 출판사는 필수입니다.", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
 
                 if (condition.isBlank() || tradeMethod.isBlank() || category.isBlank()) {
-                    Toast.makeText(context, "도서 상태 / 거래 방식/ 도서 종류를 선택해 주세요.", Toast.LENGTH_SHORT)
-                        .show()
-                    return@Button
-                }
-
-                if (ownerId.isBlank()) {
-                    Toast.makeText(context, "로그인 후 책을 등록할 수 있어요.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "모든 선택 항목을 골라주세요.", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
 
                 isLoading = true
                 val newId = UUID.randomUUID().toString()
 
-                // FireStore에 Book 저장
+                // -------------------- 저장 함수 --------------------
                 fun saveBook(imageUrl: String) {
-                    val newBook = Book(
+                    val book = Book(
                         id = newId,
                         title = title,
                         author = author,
@@ -240,72 +204,43 @@ fun UploadBookScreen(navController: NavController) {
 
                     db.collection("books")
                         .document(newId)
-                        .set(newBook)
+                        .set(book)
                         .addOnSuccessListener {
                             isLoading = false
                             Toast.makeText(context, "책이 등록되었습니다.", Toast.LENGTH_SHORT).show()
-
-                            // 입력값 초기화
-                            title = ""
-                            author = ""
-                            publisher = ""
-                            condition = ""
-                            tradeMethod = ""
-                            category = ""
-                            imageUri = null
-
-                            // 이전 화면으로 돌아가기
                             navController.popBackStack()
                         }
                         .addOnFailureListener { e ->
                             isLoading = false
-                            Toast.makeText(
-                                context,
-                                "등록 실패: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "등록 실패: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                 }
 
-                val pickedImage = imageUri
-
-                // 1) 이미지가 선택된 경우: Storage에 먼저 업로드
-                if (pickedImage != null) {
-                    val go2storage = storage.reference
-                    val image = go2storage.child("bookImages/$newId.jpg")
-
-                    image.putFile(pickedImage)
+                // -------------------- 이미지 처리 --------------------
+                val picked = imageUri
+                if (picked != null) {
+                    val imageRef = storage.reference.child("bookImages/$newId.jpg")
+                    imageRef.putFile(picked)
                         .addOnSuccessListener {
-                            // 업로드 성공 -> 다운로드 URL 가져옴
-                            image.downloadUrl
+                            imageRef.downloadUrl
                                 .addOnSuccessListener { uri ->
-                                    val downloadUrl = uri.toString()
-                                    saveBook(downloadUrl)
+                                    saveBook(uri.toString())
                                 }
-                                .addOnFailureListener { e ->
+                                .addOnFailureListener {
                                     isLoading = false
-                                    Toast.makeText(
-                                        context,
-                                        "이미지 URL 가져오기 실패: ${e.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "이미지 URL 실패", Toast.LENGTH_SHORT).show()
                                 }
                         }
-                        .addOnFailureListener { e ->
+                        .addOnFailureListener {
                             isLoading = false
-                            Toast.makeText(
-                                context,
-                                "이미지 업로드 실패: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
                         }
                 } else {
-                    //2) 사진 업로드 하지 않은 경우
-                    saveBook(imageUrl = "")
+                    saveBook("")
                 }
             }
         ) {
-            Text(if (isLoading) "등록 중" else "등록하기")
+            Text(if (isLoading) "등록 중..." else "등록하기")
         }
     }
 }

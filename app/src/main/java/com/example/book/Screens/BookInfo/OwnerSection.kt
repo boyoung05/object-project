@@ -16,19 +16,21 @@ import androidx.compose.ui.unit.sp
 import com.example.book.R
 
 @Composable
-fun OwnerSection() {
-    Column{
+fun OwnerSection(
+    nickname: String,
+    school: String
+) {
+    Column {
         Text(
-            text = "소유자 닉네임",
+            text = "소유자 정보",
             fontSize = 13.sp,
             color = Color(0xFF666666)
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 프로필 이미지 자리
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
             Image(
                 painter = painterResource(id = R.drawable.userlogo),
                 contentDescription = "프로필 이미지",
@@ -41,13 +43,13 @@ fun OwnerSection() {
 
             Column {
                 Text(
-                    text = "소유자 닉네임",
+                    text = nickname,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF333333)
                 )
                 Text(
-                    text = "소속 학교: 한국항공대학교",
+                    text = "소속 학교: $school",
                     fontSize = 12.sp,
                     color = Color(0xFF777777)
                 )
