@@ -10,7 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,10 +20,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun MyPageScreen(rootNavController: NavHostController) {
 
+    // ---------------- Firebase ----------------
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
+    val uid = auth.currentUser?.uid
+
+    // ---------------- 상태 ----------------
+    var nickname by remember { mutableStateOf("로딩중...") }
+    var school by remember { mutableStateOf("") }
+
+    // ---------------- Firestore 데이터 로드 ----------------
+    LaunchedEffect(uid) {
+        if (uid != null) {
+            db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener { doc ->
+                    nickname = doc.getString("nickname") ?: "이름 없음"
+                    school = doc.getString("school") ?: ""
+                }
+        }
+    }
+
+    // ---------------- UI ----------------
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,7 +58,7 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // --------------------------- 프로필 카드 ---------------------------
+        // =========================== 프로필 카드 ===========================
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,10 +82,19 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
                 Column {
                     Text(
-                        text = "John Doe",
+                        text = nickname,   // 🔥 실제 닉네임
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
+
+                    if (school.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = school,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -82,7 +115,7 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --------------------------- 인증 ---------------------------
+        // =========================== 인증 ===========================
         Text(text = "인증", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -97,7 +130,7 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // --------------------------- 내 책 관리 ---------------------------
+        // =========================== 내 책 관리 ===========================
         Text(text = "내 책 관리", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,14 +138,16 @@ fun MyPageScreen(rootNavController: NavHostController) {
         ManageItem("책 등록", Icons.Default.Book) {
             rootNavController.navigate("uploadBook")
         }
+
         Spacer(modifier = Modifier.height(12.dp))
+
         ManageItem("거래 완료", Icons.Default.Check) {
-            // 거래 완료 화면 이동 시 여기에 추가
+            // TODO 거래 완료 화면
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // --------------------------- 교환 + 통계 ---------------------------
+        // =========================== 교환 + 통계 ===========================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -123,7 +158,7 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // --------------------------- 나의 선호 장르 ---------------------------
+        // =========================== 선호 장르 ===========================
         Text(text = "나의 선호 장르", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -140,13 +175,12 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // --------------------------- 알림 설정 + 로그아웃 ---------------------------
+        // =========================== 설정 + 로그아웃 ===========================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            // 알림 설정 버튼
             OutlinedButton(
                 modifier = Modifier
                     .weight(1f)
@@ -159,15 +193,12 @@ fun MyPageScreen(rootNavController: NavHostController) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // ---------------- ✔ 로그아웃 버튼 (rootNavController 사용) ----------------
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
                 onClick = {
                     FirebaseAuth.getInstance().signOut()
-
-                    // 메인 네비게이션 기준으로 스택 완전 삭제 후 로그인 이동
                     rootNavController.navigate("login") {
                         popUpTo("main") { inclusive = true }
                         popUpTo("splash") { inclusive = true }
@@ -187,13 +218,12 @@ fun MyPageScreen(rootNavController: NavHostController) {
     }
 }
 
-// -------------------------------------------------------------
-//  🔥 카드 UI functions
-// -------------------------------------------------------------
+// =============================================================
+// 공용 UI 컴포넌트
+// =============================================================
 
 @Composable
 fun IconCard(label: String, icon: ImageVector) {
-
     Column(
         modifier = Modifier
             .width(150.dp)
@@ -207,34 +237,32 @@ fun IconCard(label: String, icon: ImageVector) {
             modifier = Modifier.size(40.dp),
             tint = Color(0xFF666666)
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Text(text = label, fontSize = 15.sp)
     }
 }
 
 @Composable
-fun ManageItem(label: String, icon: ImageVector, onClick: () -> Unit) {
-
+fun ManageItem(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
-            .clickable{ onClick() }
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Icon(
             imageVector = icon,
             contentDescription = label,
             modifier = Modifier.size(32.dp),
             tint = Color(0xFF666666)
         )
-
         Spacer(modifier = Modifier.width(16.dp))
-
         Text(text = label, fontSize = 16.sp)
     }
 }
