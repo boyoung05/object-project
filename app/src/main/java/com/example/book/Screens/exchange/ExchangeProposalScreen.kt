@@ -239,6 +239,7 @@ fun createExchangeAndChatRoom(
 ) {
     val db = FirebaseFirestore.getInstance()
 
+    // 1️⃣ Exchange 생성
     val exchangeData = hashMapOf(
         "proposerId" to myUid,
         "opponentId" to opponentUid,
@@ -257,20 +258,62 @@ fun createExchangeAndChatRoom(
         .add(exchangeData)
         .addOnSuccessListener { exchangeDoc ->
 
-            val chatRoomData = hashMapOf(
-                "exchangeId" to exchangeDoc.id,
-                "participants" to listOf(myUid, opponentUid),
-                "createdAt" to FieldValue.serverTimestamp(),
-                "lastMessage" to ""
-            )
+            // 🔥 2️⃣ 상대방 정보 조회 (채팅 목록 표시용)
+            db.collection("users")
+                .document(opponentUid)
+                .get()
+                .addOnSuccessListener { userSnap ->
 
-            db.collection("chatRooms")
-                .add(chatRoomData)
-                .addOnSuccessListener { chatRoomDoc ->
-                    onSuccess(chatRoomDoc.id)
+                    val opponentName =
+                        userSnap.getString("nickname") ?: "알 수 없음"
+                    val opponentSchool =
+                        userSnap.getString("school") ?: ""
+
+                    // 3️⃣ ChatRoom 생성
+                    val chatRoomData = hashMapOf(
+                        "exchangeId" to exchangeDoc.id,
+                        "users" to listOf(myUid, opponentUid),
+
+                        // 🔥 채팅 목록용 정보
+                        "opponentName" to opponentName,
+                        "opponentSchool" to opponentSchool,
+                        "proposalBookTitles" to selectedBooks.map { it.title },
+
+                        "createdAt" to FieldValue.serverTimestamp(),
+                        "lastMessage" to "교환 제안을 보냈습니다"
+                    )
+
+                    db.collection("chats")
+                        .add(chatRoomData)
+                        .addOnSuccessListener { chatRoomDoc ->
+
+                            // 🔥 4️⃣ 제안 메시지 자동 생성 (❗ 유지 ❗)
+                            val proposalMessage = hashMapOf(
+                                "senderId" to myUid,
+                                "type" to "proposal",
+                                "text" to "교환 제안을 보냈습니다",
+                                "exchangeId" to exchangeDoc.id,
+                                "proposalData" to mapOf(
+                                    "bookCount" to selectedBooks.size,
+                                    "tradeMethod" to tradeMethod,
+                                    "meetPlace" to meetPlace,
+                                    "meetTime" to meetTime
+                                ),
+                                "createdAt" to FieldValue.serverTimestamp()
+                            )
+
+                            db.collection("messages")
+                                .document(chatRoomDoc.id)
+                                .collection("items")
+                                .add(proposalMessage)
+
+                            // 5️⃣ 이동
+                            onSuccess(chatRoomDoc.id)
+                        }
                 }
         }
 }
+
 
 fun loadMyBooks(
     onResult: (List<Book>) -> Unit

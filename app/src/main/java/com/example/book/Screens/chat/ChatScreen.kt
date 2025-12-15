@@ -18,7 +18,11 @@ import com.google.firebase.firestore.Query
 
 data class ChatRoom(
     val id: String = "",
-    val users: List<String> = emptyList()
+    val users: List<String> = emptyList(),
+    val opponentName: String = "",
+    val opponentSchool: String = "",
+    val proposalBookTitles: List<String> = emptyList(),
+    val lastMessage: String = ""
 )
 
 @Composable
@@ -35,8 +39,7 @@ fun ChatScreen(navController: NavController) {
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     chatRooms = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(ChatRoom::class.java)
-                            ?.copy(id = doc.id)
+                        doc.toObject(ChatRoom::class.java)?.copy(id = doc.id)
                     }
                 }
             }
@@ -49,26 +52,17 @@ fun ChatScreen(navController: NavController) {
             .padding(20.dp)
     ) {
 
-        Text("채팅", fontSize = 22.sp, color = Color.Black)
+        Text("채팅", fontSize = 22.sp)
         Spacer(Modifier.height(20.dp))
 
-        if (chatRooms.isEmpty()) {
-            Text(
-                "아직 채팅방이 없습니다",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(chatRooms) { room ->
-                    ChatRoomItem(
-                        chatRoom = room,
-                        myUid = myUid,
-                        onClick = {
-                            navController.navigate("chat_room/${room.id}")
-                        }
-                    )
-                }
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(chatRooms) { room ->
+                ChatRoomItem(
+                    room = room,
+                    onClick = {
+                        navController.navigate("chat_room/${room.id}")
+                    }
+                )
             }
         }
     }
@@ -76,29 +70,32 @@ fun ChatScreen(navController: NavController) {
 
 @Composable
 fun ChatRoomItem(
-    chatRoom: ChatRoom,
-    myUid: String,
+    room: ChatRoom,
     onClick: () -> Unit
 ) {
-    val opponentUid = chatRoom.users.firstOrNull { it != myUid } ?: "알 수 없음"
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
             .background(Color.White)
             .clickable { onClick() }
             .padding(16.dp)
     ) {
         Column {
+
             Text(
-                text = "상대 UID: $opponentUid",
-                fontSize = 15.sp,
+                text = "${room.opponentName} (${room.opponentSchool})",
+                fontSize = 16.sp,
                 color = Color.Black
             )
+
+            Spacer(Modifier.height(4.dp))
+
             Text(
-                text = "채팅방 ID: ${chatRoom.id.take(6)}...",
-                fontSize = 12.sp,
+                text = if (room.proposalBookTitles.isNotEmpty())
+                    "📘 ${room.proposalBookTitles.joinToString(" · ")}"
+                else
+                    room.lastMessage,
+                fontSize = 13.sp,
                 color = Color.Gray
             )
         }

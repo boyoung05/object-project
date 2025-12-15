@@ -1,29 +1,59 @@
 package com.example.book.Screens.chat
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.book.model.Message
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 @Composable
 fun ChatRoomScreen(chatRoomId: String) {
 
-    Box(
+    var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
+
+    LaunchedEffect(chatRoomId) {
+        FirebaseFirestore.getInstance()
+            .collection("messages")
+            .document(chatRoomId)
+            .collection("items")
+            .orderBy("createdAt", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    messages = snapshot.documents.mapNotNull {
+                        it.toObject(Message::class.java)?.copy(id = it.id)
+                    }
+                }
+            }
+    }
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF6F6F6)),
-        contentAlignment = Alignment.Center
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("채팅방", fontSize = 22.sp)
-            Spacer(Modifier.height(8.dp))
-            Text("chatRoomId:")
-            Text(chatRoomId, fontSize = 12.sp, color = Color.Gray)
+        items(messages) { msg ->
+            when (msg.type) {
+                "proposal" -> {
+                    ProposalMessageCard(
+                        proposalData = msg.proposalData ?: emptyMap(),
+                        onAccept = {
+                            // 🔥 여기서 exchange status → 수락
+                        },
+                        onReject = {
+                            // 🔥 여기서 exchange status → 거절
+                        }
+                    )
+                }
+                else -> {
+                    Text(msg.text)
+                }
+            }
         }
     }
 }
