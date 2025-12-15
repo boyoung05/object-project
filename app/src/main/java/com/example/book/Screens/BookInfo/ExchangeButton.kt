@@ -14,10 +14,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun ExchangeButton(navController: NavController) {
+fun ExchangeButton(
+    navController: NavController,
+    opponentUid: String   // 🔥 추가
+) {
     Button(
         onClick = {
-            navController.navigate("exchange_proposal")
+            navController.navigate("exchange_proposal/$opponentUid")
         },
         modifier = Modifier
             .fillMaxWidth()

@@ -17,6 +17,7 @@ import com.example.book.Screens.mypage.MyPageScreen
 import com.example.book.Screens.exchange.ExchangeProposalScreen
 import com.example.book.Screens.mypage.UploadBookScreen
 import com.example.book.Screens.chat.ChatRoomScreen
+import com.example.book.Screens.chat.ChatScreen
 
 @Composable
 fun BottomNavHost(
@@ -36,7 +37,7 @@ fun BottomNavHost(
 
         composable("search") { SearchScreen(navController) }
 
-        composable("chat") { ChatRoomScreen() }
+        composable("chat") { ChatScreen(navController) }
 
         //  수정함 (원래: MyPageScreen에는 rootNavController 전달)
         composable("mypage") { MyPageScreen(navController) }
@@ -55,6 +56,33 @@ fun BottomNavHost(
             BookInfoScreen(navController, bookId)
         }
 
-        composable("exchange_proposal") { ExchangeProposalScreen(navController) }
+        /* ===================== 교환 제안 ===================== */
+        composable(
+            route = "exchange_proposal/{opponentUid}",
+            arguments = listOf(
+                navArgument("opponentUid") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val opponentUid =
+                backStackEntry.arguments?.getString("opponentUid") ?: ""
+
+            ExchangeProposalScreen(
+                navController = navController,
+                opponentUid = opponentUid
+            )
+        }
+
+        /* ===================== 채팅방 ===================== */
+        composable(
+            route = "chat_room/{chatRoomId}",
+            arguments = listOf(
+                navArgument("chatRoomId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val chatRoomId =
+                backStackEntry.arguments?.getString("chatRoomId") ?: ""
+
+            ChatRoomScreen(chatRoomId)
+        }
     }
 }

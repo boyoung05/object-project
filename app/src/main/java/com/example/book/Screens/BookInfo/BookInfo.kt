@@ -1,27 +1,19 @@
 package com.example.book.Screens.BookInfo
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.book.model.Book
 import com.google.firebase.firestore.FirebaseFirestore
-
 
 @Composable
 fun BookInfoScreen(
@@ -46,7 +38,7 @@ fun BookInfoScreen(
                 val fetchedBook = doc.toObject(Book::class.java)
                 book = fetchedBook
 
-                // 🔥 소유자 정보 조회
+                // 🔥 책 소유자 정보 조회
                 fetchedBook?.ownerId?.let { uid ->
                     db.collection("users")
                         .document(uid)
@@ -95,6 +87,7 @@ fun BookInfoScreen(
                     .verticalScroll(scrollState)
                     .padding(30.dp)
             ) {
+
                 Text(
                     text = "책 정보",
                     fontSize = 18.sp,
@@ -109,7 +102,6 @@ fun BookInfoScreen(
                 HighlightSection()
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔥 실제 소유자 정보 전달
                 OwnerSection(
                     nickname = ownerNickname ?: "알 수 없음",
                     school = ownerSchool ?: "학교 정보 없음"
@@ -117,7 +109,11 @@ fun BookInfoScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                ExchangeButton(navController = navController)
+                // ✅ 여기 핵심 수정
+                ExchangeButton(
+                    navController = navController,
+                    opponentUid = book!!.ownerId
+                )
             }
         }
     }
